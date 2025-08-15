@@ -1,18 +1,19 @@
 // src/dashboard/DashboardV1Classic.jsx
 import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion as fmMotion } from "framer-motion";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import SpaceScene from "../components/SpaceScene.jsx";
 import { todayKey, ymd, DAY_MS } from "../constants/gameData.js";
 import Modal from "../components/Modal.jsx";
 import StressModal from "../components/StressModal.jsx";
-import { useDashboardCore } from "./useDashboardCore.js";
+import { useDashboardCore, LECTURE_XP } from "./useDashboardCore.js";
 
 // small UI
+const MotionDiv = fmMotion.div;
 const ProgressBar = ({value})=>(
   <div className="relative h-3 w-full overflow-hidden rounded-full bg-neutral-700">
-    <motion.div initial={{width:0}} animate={{width:`${Math.min(100,Math.max(0,value))}%`}}
+    <MotionDiv initial={{width:0}} animate={{width:`${Math.min(100,Math.max(0,value))}%`}}
       className="absolute left-0 top-0 h-full" style={{background:"linear-gradient(90deg,#10b981,#22d3ee)"}}/>
   </div>
 );
@@ -28,10 +29,9 @@ export default function DashboardV1Classic({ activeUser }) {
     awardXP, incStat,
     isJsDone, toggleJsLecture,
     userCourse, addSection, addLecture, deleteSection, isUcDone, toggleUcLecture, deleteUcLecture, onUcDragEnd,
-    addMilestone, toggleMilestone, deleteMilestone,
     addCapstone, deleteCapstone, claimCapstone,
     exportProgress, importProgress,
-    quests, updateQuest, logStudy, logBreak,
+    quests, logStudy, logBreak,
     newBadge, setNewBadge,
     sortedPeers, shufflePeers,
   } = useDashboardCore(activeUser);
@@ -126,7 +126,7 @@ export default function DashboardV1Classic({ activeUser }) {
             <div className="text-sm opacity-80">Progress: {state.jsChecklist.length}/{TOTAL_LECTURES}</div>
           </div>
           <div className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-700 mb-4">
-            <motion.div initial={{width:0}} animate={{width:`${Math.round((state.jsChecklist.length/TOTAL_LECTURES)*100)}%`}} className="absolute left-0 top-0 h-full bg-emerald-500"/>
+            <MotionDiv initial={{width:0}} animate={{width:`${Math.round((state.jsChecklist.length/TOTAL_LECTURES)*100)}%`}} className="absolute left-0 top-0 h-full bg-emerald-500"/>
           </div>
           <div className="space-y-3">
             {COURSE_SECTIONS.map((sec,si)=>{
@@ -308,7 +308,7 @@ export default function DashboardV1Classic({ activeUser }) {
       </Modal>
 
       {/* Weekly Summary Modal (simple, bright) */}
-      <WeeklyModal isOpen={openWeekly} onClose={()=>setOpenWeekly(false)} state={state} weeklyXP={weeklyXP} xpInLevel={xpInLevel} levelNow={levelNow} streak={streak}/>
+      <WeeklyModal isOpen={openWeekly} onClose={()=>setOpenWeekly(false)} state={state} xpInLevel={xpInLevel} levelNow={levelNow} streak={streak}/>
       <StressModal open={openStress} onClose={()=>setOpenStress(false)} state={state} onLogBreak={logBreak}/>
     </div>
   );
@@ -316,9 +316,9 @@ export default function DashboardV1Classic({ activeUser }) {
 
 // helper weekly modal
 const dayShort=["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
-function WeeklyModal({isOpen,onClose,state,weeklyXP,streak,xpInLevel,levelNow}){
+function WeeklyModal({isOpen,onClose,state,streak,xpInLevel,levelNow}){
   const base=new Date(); base.setHours(0,0,0,0);
-  const series=[]; for(let i=6;i>=0;i++){ const d=new Date(base.getTime()-i*DAY_MS); const k=ymd(d); series.push({key:k,label:dayShort[d.getDay()],xp:Number(state.history?.[k]||0)}); }
+  const series=[]; for(let i=6;i>=0;i--){ const d=new Date(base.getTime()-i*DAY_MS); const k=ymd(d); series.push({key:k,label:dayShort[d.getDay()],xp:Number(state.history?.[k]||0)}); }
   const total=series.reduce((a,b)=>a+b.xp,0);
   const max=Math.max(...series.map(d=>d.xp),1);
   const avg=Math.round(total/7);
@@ -336,7 +336,7 @@ function WeeklyModal({isOpen,onClose,state,weeklyXP,streak,xpInLevel,levelNow}){
         <div>
           <div className="text-sm font-semibold mb-2">Aktivitas Harian</div>
           <div className="flex items-end gap-3">
-            {series.map((d,i)=>(
+            {series.map(d=>(
               <div key={d.key} className="flex flex-col items-center w-10">
                 <div className="w-7 rounded-md" style={{
                   height: Math.max(6, Math.round((d.xp/max)*100))+"px",
