@@ -1,9 +1,9 @@
 // src/dashboard/useDashboardCore.js
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import courseData from "../course_js.json";
 import { BADGES, genDailyQuests, todayKey, ymd, DAY_MS, buildBadgeCtx } from "../constants/gameData.js";
 
-const LECTURE_XP = 1;
+export const LECTURE_XP = 1;
 const LS_KEY = "mentor-dashboard-pro-v9";
 
 const playTone=(f=440,d=0.1,t="sine",g=0.07)=>{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=new C();const o=c.createOscillator();const G=c.createGain();o.type=t;o.frequency.value=f;G.gain.value=g;o.connect(G);G.connect(c.destination);o.start();setTimeout(()=>{o.stop();c.close();},d*1000);};

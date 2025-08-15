@@ -1,22 +1,18 @@
 // src/components/uiBits.jsx
-import { motion } from "framer-motion";
-import React, { useRef, useState } from "react";
+import { motion as fmMotion } from "framer-motion";
+import { useRef, useState } from "react";
 
-export const DAY_MS = 86400000;
-export const LS_KEY = "mentor-dashboard-pro-v9";
-export const UI_KEY = "mentor-dashboard-pro-v9-ui";
-
-export const clamp = (n,a,b)=>Math.min(b,Math.max(a,n));
-export const ymd=(d)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-export const todayKey=()=>ymd(new Date());
+const MotionDiv = fmMotion.div;
+const MotionCircle = fmMotion.circle;
+const clamp = (n,a,b)=>Math.min(b,Math.max(a,n));
 
 export const ProgressBar = ({ value, className="" }) => (
   <div className={"relative h-3 w-full overflow-hidden rounded-full bg-neutral-200 "+className}>
-    <motion.div initial={{ width: 0 }} animate={{ width: `${clamp(value,0,100)}%` }}
+    <MotionDiv initial={{ width: 0 }} animate={{ width: `${clamp(value,0,100)}%` }}
       transition={{ type:"spring", stiffness:80, damping:20 }}
       className="absolute left-0 top-0 h-full"
       style={{ background: "linear-gradient(90deg,#10b981,#22d3ee)" }}/>
-    <motion.div className="absolute inset-0" initial={{ x: "-100%" }} animate={{ x: "100%" }}
+    <MotionDiv className="absolute inset-0" initial={{ x: "-100%" }} animate={{ x: "100%" }}
       transition={{ repeat: Infinity, duration: 1.8, ease: "linear" }}
       style={{ background: "linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent)" }}/>
   </div>
@@ -48,7 +44,7 @@ export const ParticleBurst = ({ burstKey, x=0, y=0 }) => {
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999]">
       {items.map(p=>(
-        <motion.div key={p.id} initial={{opacity:.9,x,y,rotate:p.r,scale:.8}}
+        <MotionDiv key={p.id} initial={{opacity:.9,x,y,rotate:p.r,scale:.8}}
           animate={{opacity:0,x:x+p.dx,y:y+p.dy,rotate:p.r+120,scale:1}}
           transition={{duration:.8,ease:"easeOut"}} style={{position:"absolute",width:p.s,height:p.s,borderRadius:2,background:p.c}}/>
       ))}
@@ -60,9 +56,9 @@ export const Medal = ({ rank }) => {
   const map = {1:["#f59e0b","#fde68a"], 2:["#9ca3af","#e5e7eb"], 3:["#d97706","#fcd34d"]};
   const [a,b] = map[rank] || ["#9ca3af","#e5e7eb"];
   return (
-    <motion.div className="w-8 h-8 rounded-full grid place-items-center text-xs font-bold text-white"
+    <MotionDiv className="w-8 h-8 rounded-full grid place-items-center text-xs font-bold text-white"
       style={{ background:`linear-gradient(135deg,${a},${b})` }}
-      animate={{ scale:[1,1.08,1] }} transition={{ duration:1.8, repeat:Infinity }}>{rank}</motion.div>
+      animate={{ scale:[1,1.08,1] }} transition={{ duration:1.8, repeat:Infinity }}>{rank}</MotionDiv>
   );
 };
 
@@ -72,7 +68,7 @@ export const AvatarWithRing = ({ name="Kamu", pct=0 }) => {
     <div className="relative flex items-center gap-2">
       <svg width="44" height="44" className="rotate-[-90deg]">
         <circle cx="22" cy="22" r={r} stroke="#e5e7eb" strokeWidth="6" fill="none"/>
-        <motion.circle cx="22" cy="22" r={r} stroke="#10b981" strokeWidth="6" fill="none"
+        <MotionCircle cx="22" cy="22" r={r} stroke="#10b981" strokeWidth="6" fill="none"
           strokeDasharray={c} strokeDashoffset={c}
           animate={{ strokeDashoffset: off }} transition={{ type:"spring", stiffness:60, damping:20 }}/>
       </svg>
@@ -94,7 +90,7 @@ export const LevelRing = ({ pct=0 }) => {
   return (
     <svg width="70" height="70" className="rotate-[-90deg]">
       <circle cx="35" cy="35" r={r} stroke="#e5e7eb" strokeWidth="8" fill="none"/>
-      <motion.circle cx="35" cy="35" r={r} stroke="#10b981" strokeWidth="8" fill="none"
+      <MotionCircle cx="35" cy="35" r={r} stroke="#10b981" strokeWidth="8" fill="none"
         strokeDasharray={c} strokeDashoffset={c}
         animate={{ strokeDashoffset: off }} transition={{ type:"spring", stiffness:80, damping:20 }}/>
     </svg>
